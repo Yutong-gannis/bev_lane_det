@@ -183,17 +183,14 @@ class OpenLane_dataset_with_offset(Dataset):
                 if lane1['attribute'] not in [1, 2, 3, 4]:
                     continue
             elif left_lane == 1 and right_lane == 0: # 只有左车道线存在
-                if lane1['attribute'] != 2 and lane1['category'] != 21:
+                if lane1['attribute'] not in [1, 2] and lane1['category'] != 21:
                     continue
             elif left_lane == 0 and right_lane == 1: # 只有右车道线存在
-                if lane1['attribute'] != 3 and lane1['category'] != 20:
+                if lane1['attribute'] not in [3, 4] and lane1['category'] != 20:
                     continue
             else: #左右车道均不存在
                 if lane1['category'] not in [20, 21]:
                     continue
-                    
-        for idx in range(len(lanes)):
-            lane1 = lanes[idx]
             lane_camera_w = np.array(lane1['xyz']).T[np.array(lane1['visibility']) == 1.0].T
             lane_camera_w = np.vstack((lane_camera_w, np.ones((1, lane_camera_w.shape[1]))))
             lane_ego_persformer = matrix_lane2persformer @ lane_camera_w  #
