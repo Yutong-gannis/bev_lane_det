@@ -167,6 +167,31 @@ class OpenLane_dataset_with_offset(Dataset):
             m_per_pixel=self.meter_per_pixel)  #
         image_gt = np.zeros((image_h, image_w), dtype=np.uint8)
         res_points_d = {}
+
+         # 判断左右车道是否存在
+        left_lane, right_lane = 0, 0
+        for idx in range(len(lanes)):
+            lane1 = lanes[idx]
+            if lane1['attribute'] == 2:
+                left_lane = 1
+            if lane1['attribute'] == 3:
+                right_lane = 1
+                
+        for idx in range(len(lanes)):
+            lane1 = lanes[idx]
+            if left_lane == 1 and right_lane == 1: # 左右车道线均存在
+                if lane1['attribute'] not in [1, 2, 3, 4]:
+                    continue
+            elif left_lane == 1 and right_lane == 0: # 只有左车道线存在
+                if lane1['attribute'] != 2 and lane1['category'] != 21:
+                    continue
+            elif left_lane == 0 and right_lane == 1: # 只有右车道线存在
+                if lane1['attribute'] != 3 and lane1['category'] != 20:
+                    continue
+            else: #左右车道均不存在
+                if lane1['category'] not in [20, 21]:
+                    continue
+                    
         for idx in range(len(lanes)):
             lane1 = lanes[idx]
             lane_camera_w = np.array(lane1['xyz']).T[np.array(lane1['visibility']) == 1.0].T
